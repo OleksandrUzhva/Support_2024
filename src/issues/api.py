@@ -38,7 +38,10 @@ def post_issues(requesst: HttpRequest) -> JsonResponse:
     # issue = Issues.objects.update()
     # issue = Issues.objects.delete()
     issue = Issues.objects.create(
-        titel=_randome_string(20), body=_randome_string(30), junior_id=2, senior_id=1 # noqa E501
+        titel=_randome_string(20),
+        body=_randome_string(30),
+        junior_id=2,
+        senior_id=1,  # noqa E501
     )
     # issue = Issues.objects.all()
 
