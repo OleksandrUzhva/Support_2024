@@ -1,5 +1,4 @@
-import random
-import string
+import json
 
 from django.http import HttpRequest, JsonResponse
 from django.shortcuts import render  # noqa F401
@@ -26,20 +25,18 @@ def get_issues(requesst: HttpRequest) -> JsonResponse:
     return JsonResponse(data=result)
 
 
-def _randome_string(length: int = 10) -> str:
-    return "".join(
-        [random.choice(string.ascii_letters) for i in range(length)]
-    )  # noqa E501
-
-
 @csrf_exempt
-def post_issues(requesst: HttpRequest) -> JsonResponse:
+def post_issues(request: HttpRequest) -> JsonResponse:
+    if request.method == "POST":
+        data = json.loads(request.body)
+        titel = data.get("titel")
+        body = data.get("body")
     # issue = Issues.objects.get()
     # issue = Issues.objects.update()
     # issue = Issues.objects.delete()
     issue = Issues.objects.create(
-        titel=_randome_string(20),
-        body=_randome_string(30),
+        titel=titel,
+        body=body,
         junior_id=2,
         senior_id=1,  # noqa E501
     )
