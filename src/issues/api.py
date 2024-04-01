@@ -1,6 +1,6 @@
 import json
 
-from django.http import Http404, HttpRequest, JsonResponse # noqa F401
+from django.http import Http404, HttpRequest, JsonResponse  # noqa F401
 from django.shortcuts import render  # noqa F401
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import serializers
@@ -29,7 +29,9 @@ def get_issues(request) -> Response:
     # issue = Issues.objects.create()
     issues = Issues.objects.all()
 
-    result: list[IssuesSerializer] = [IssuesSerializer(issue).data for issue in issues] # noqa 
+    result: list[IssuesSerializer] = [
+        IssuesSerializer(issue).data for issue in issues
+    ]  # noqa
 
     return Response(data=result)
 
