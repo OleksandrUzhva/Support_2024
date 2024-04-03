@@ -7,12 +7,12 @@ from rest_framework import serializers
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from issues.models import Issues
+from issues.models import Issue
 
 
 class IssuesSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Issues
+        model = Issue
         fields = ["id", "title", "body", "junior_id", "senior_id"]
         # fields = "__all__" # returne the whole column
         # exclude = ["id"...] # exclude some column which we don`t need
@@ -23,11 +23,11 @@ class IssuesSerializer(serializers.ModelSerializer):
 
 @api_view()
 def get_issues(request) -> Response:
-    # issue = Issues.objects.get()
-    # issue = Issues.objects.update()
-    # issue = Issues.objects.delete()
-    # issue = Issues.objects.create()
-    issues = Issues.objects.all()
+    # issue = Issue.objects.get()
+    # issue = Issue.objects.update()
+    # issue = Issue.objects.delete()
+    # issue = Issue.objects.create()
+    issues = Issue.objects.all()
 
     result: list[IssuesSerializer] = [
         IssuesSerializer(issue).data for issue in issues
@@ -39,12 +39,12 @@ def get_issues(request) -> Response:
 @api_view()
 def retrieve_issues(request, issue_id: int) -> Response:
     try:
-        issues = Issues.objects.get(id=issue_id)
-    # issues = Issues.objects.update()
-    # issues = Issues.objects.delete()
-    # issues = Issues.objects.create()
-    # issues = Issues.objects.all()
-    except Issues.DoesNotExist:
+        issues = Issue.objects.get(id=issue_id)
+    # issues = Issue.objects.update()
+    # issues = Issue.objects.delete()
+    # issues = Issue.objects.create()
+    # issues = Issue.objects.all()
+    except Issue.DoesNotExist:
         raise Http404
     return Response(data={"result": IssuesSerializer(issues).data})
 
@@ -64,6 +64,6 @@ def post_issues(request) -> Response:
     serializer = IssuesSerializer(data=payload)
     serializer.is_valid(raise_exception=True)
 
-    issue = Issues.objects.create(**serializer.validated_data)
+    issue = Issue.objects.create(**serializer.validated_data)
 
     return Response(data=IssuesSerializer(issue).data)
