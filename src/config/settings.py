@@ -36,10 +36,7 @@ LOCAL_APPS = [
     "issues",
 ]
 
-THIRD_PARTY_APPS = [
-    "rest_framework",
-    "rest_framework_simplejwt"
-]
+THIRD_PARTY_APPS = ["rest_framework", "rest_framework_simplejwt"]
 
 INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS + THIRD_PARTY_APPS
 
@@ -133,8 +130,8 @@ AUTH_USER_MODEL = "users.User"
 
 # Django Rest Framework configuration
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
     )
 }
 
@@ -142,7 +139,6 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     "UPDATE_LAST_LOGIN": True,
-
     "ALGORITHM": "HS256",
     "SIGNING_KEY": SECRET_KEY,
     "VERIFYING_KEY": "",
@@ -151,11 +147,9 @@ SIMPLE_JWT = {
     "JSON_ENCODER": None,
     "JWK_URL": None,
     "LEEWAY": 0,
-
     "AUTH_HEADER_TYPES": ("Bearer",),
-   
-    # "TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainPairSerializer",
-    # "TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSerializer",
+    # "TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainPairSerializer", # noqa
+    # "TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSerializer", # noqa
 }
 
-APPEND_SLASH=False
+APPEND_SLASH = False

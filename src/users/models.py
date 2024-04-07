@@ -1,6 +1,7 @@
-from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
+from django.utils import timezone
+
 from .manager import UserManager
 
 
@@ -9,9 +10,15 @@ class User(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
 
-    is_staff = models.BooleanField(default=False,)
-    is_superuser = models.BooleanField(default=False,)
-    is_active = models.BooleanField(default=True,)
+    is_staff = models.BooleanField(
+        default=False,
+    )
+    is_superuser = models.BooleanField(
+        default=False,
+    )
+    is_active = models.BooleanField(
+        default=True,
+    )
 
     date_joined = models.DateTimeField(default=timezone.now)
 
@@ -29,7 +36,6 @@ class User(AbstractBaseUser, PermissionsMixin):
         """
 
         return f"{self.firs_name} {self.last_name}".strip()
-        
 
     def get_short_name(self):
         """Return the short name for the user."""
