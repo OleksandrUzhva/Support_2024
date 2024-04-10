@@ -5,6 +5,7 @@ from users.models import User
 
 class Issue(models.Model):
     title = models.CharField(max_length=100)
+    body = models.TextField(null=True)
     status = models.PositiveSmallIntegerField()
 
     junior = models.ForeignKey(
@@ -16,7 +17,7 @@ class Issue(models.Model):
 
 
 class Massege(models.Model):
-    body = models.TextField
+    body = models.TextField(null=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
     user = models.ForeignKey(
