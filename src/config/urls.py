@@ -6,7 +6,7 @@ from issues.api import IssueAPI, IssuesRetrieveAPI  # noqa
 from users.api import UserAPI, UserRetrieveAPI  # noqa
 
 # from rest_framework_simplejwt.views import TokenObtainPairView  # noqa
-
+# dfsdfsd
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("users/", UserAPI.as_view()),
