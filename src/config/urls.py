@@ -14,6 +14,6 @@ urlpatterns = [
     path("issues/", IssueAPI.as_view()),
     path("issues/<int:id>", IssuesRetrieveAPI.as_view()),
     # Authentication
-    path("auth/token/", token_obtain_pair)
+    path("auth/token/", token_obtain_pair),
     # path("auth/token/", TokenObtainPairView.as_view())
 ]
