@@ -1,6 +1,6 @@
-from django.contrib import admin
-from django.urls import path
-from rest_framework_simplejwt.views import token_obtain_pair
+from django.contrib import admin  # noqa
+from django.urls import path  # noqa
+from rest_framework_simplejwt.views import token_obtain_pair  # noqa
 
 from issues.api import IssueAPI, IssuesRetrieveAPI  # noqa
 from users.api import UserAPI, UserRetrieveAPI  # noqa
