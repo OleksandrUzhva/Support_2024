@@ -3,8 +3,8 @@
 # from django.http import HttpRequest, JsonResponse # noqa
 from django.contrib.auth.hashers import make_password
 from rest_framework import generics, permissions, serializers, status
-from rest_framework.exceptions import ValidationError
-from rest_framework.permissions import IsAdminUser
+from rest_framework.exceptions import PermissionDenied, ValidationError
+from rest_framework.permissions import BasePermission
 from rest_framework.response import Response
 
 from .enums import Role
@@ -72,12 +72,29 @@ class UserAPI(generics.ListCreateAPIView):
         )
 
 
+class IsAdminUser(BasePermission):
+    def has_permission(self, request, view):
+        if not request.user.is_authenticated:
+            return False
+
+        if request.user.role in [Role.ADMIN]:
+            return True
+
+        return False
+
+
 class UserRetrieveAPI(generics.RetrieveUpdateDestroyAPIView):
     http_method_names = ["get", "put", "patch", "delete"]
     serializer_class = UserRegistrationPublickSerializer
     queryset = User.objects.all()
     lookup_url_kwarg = "id"
     permission_classes = [IsAdminUser]
+
+    def delete(self, request, *args, **kwargs):
+        if request.user.role != Role.ADMIN:
+            raise PermissionDenied("Only admin users can perform this action.")
+
+        return super().delete(request, *args, **kwargs)
 
     # def delete(self, request):
     #     # if request.user.role == Role.JUNIOR or Role.SENIOR:
