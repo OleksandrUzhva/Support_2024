@@ -2,8 +2,12 @@
 # import json
 # from django.http import HttpRequest, JsonResponse # noqa
 from django.contrib.auth.hashers import make_password
-from rest_framework import generics, serializers
+from rest_framework import generics, permissions, serializers, status
+from rest_framework.exceptions import ValidationError
+from rest_framework.permissions import IsAdminUser
+from rest_framework.response import Response
 
+from .enums import Role
 from .models import User
 
 # User = get_user_model() # other method for import User
@@ -12,31 +16,74 @@ from .models import User
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["id", "email", "first_name", "last_name", "role", "is_active"]  # noqa
+        fields = [
+            "id",
+            "email",
+            "password",
+            "first_name",
+            "last_name",
+            "role",
+            "is_active",
+        ]  # noqa
+
+    def validate_role(self, value: str) -> str:
+        if value not in Role.users():
+            raise ValidationError(
+                f"Selected Role must be in {Role.users_value()}"
+            )  # noqa
+        return value
 
     def validate(self, attrs):
+        attrs["password"] = make_password(attrs["password"])
         return attrs
 
-    def create(self, validated_data):
-        validated_data["password"] = make_password(
-            validated_data.get("password")
-        )  # noqa
-        return super().create(validated_data)
+
+class UserRegistrationPublickSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "email", "first_name", "last_name", "role"]
 
 
-class UserAPI(generics.CreateAPIView):
+class UserAPI(generics.ListCreateAPIView):
     http_method_names = ["get", "post"]
     serializer_class = UserSerializer
+    permission_classes = [permissions.AllowAny]
 
     def get_queryset(self):
         return User.objects.all()
 
+    def post(self, requst):
+        serializer = self.get_serializer(data=requst.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+
+        return Response(
+            UserRegistrationPublickSerializer(serializer.data).data,
+            status=status.HTTP_201_CREATED,
+            headers=self.get_success_headers(serializer.data),
+        )
+
+    def get(self, request):
+        queryset = self.get_queryset()
+        serializer = UserSerializer(queryset)
+        return Response(
+            serializer.data,
+            status=status.HTTP_200_OK,
+        )
+
 
 class UserRetrieveAPI(generics.RetrieveUpdateDestroyAPIView):
     http_method_names = ["get", "put", "patch", "delete"]
-    serializer_class = UserSerializer
+    serializer_class = UserRegistrationPublickSerializer
     queryset = User.objects.all()
     lookup_url_kwarg = "id"
+    permission_classes = [IsAdminUser]
+
+    # def delete(self, request):
+    #     # if request.user.role == Role.JUNIOR or Role.SENIOR:
+    #     #     raise Exception("Only Admin can delete")
+
+    #     return super().delete(request)
 
 
 # def create_user(request: HttpRequest) -> JsonResponse:
