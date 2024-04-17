@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Q
 
 from users.models import User
 
@@ -7,6 +8,11 @@ ISSUE_STATUS_CHOICES = (
     (2, "In progress"),
     (3, "Closed"),
 )
+
+
+class IssueManagers(models.Manager):
+    def filter_by_participent(self, user: User):
+        return self.model.filter(Q(junior=user) | Q(senior=user))
 
 
 class Issue(models.Model):
@@ -21,6 +27,8 @@ class Issue(models.Model):
         User, on_delete=models.CASCADE, related_name="senior_issue", null=True
     )
 
+    objects = IssueManagers()
+
     def __repr__(self) -> str:
         return f"Issue[{self.pk} {self.title[:10]}]"
 
@@ -28,7 +36,7 @@ class Issue(models.Model):
         return self.title[:10]
 
 
-class Massege(models.Model):
+class Message(models.Model):
     body = models.TextField(null=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
