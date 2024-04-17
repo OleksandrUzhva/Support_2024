@@ -2,13 +2,11 @@ from django.contrib import admin  # noqa
 from django.urls import path  # noqa
 from rest_framework_simplejwt.views import token_obtain_pair  # noqa
 
-from issues.api import (
-    IssueAPI,
-    IssuesRetrieveAPI,
-    issues_close,
-    issues_take,
-    messages_api_dispatcher,
-)
+from issues.api import IssueAPI  # noqa
+from issues.api import IssuesRetrieveAPI  # noqa
+from issues.api import issues_close  # noqa
+from issues.api import issues_take  # noqa
+from issues.api import messages_api_dispatcher  # noqa; noqa
 from users.api import UserAPI, UserRetrieveAPI  # noqa
 
 # from rest_framework_simplejwt.views import TokenObtainPairView  # noqa
