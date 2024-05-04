@@ -5,11 +5,11 @@ run:
 
 .PHONY: check
 check:
-	python3.12 -m ruff . && python3.12 -m black --check . && python3.12 -m isort --check .
+	python3.12 -m flake8 . && python3.12 -m black --check . && python3.12 -m isort --check .
 
 .PHONY: fix
 fix:
-	python3.12 -m ruff --fix . && python3.12 -m black . && python3.12 -m isort .
+	python3.12 -m black . && python3.12 -m isort .
     
 .PHONY: database
 database:
