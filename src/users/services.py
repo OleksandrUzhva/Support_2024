@@ -19,4 +19,6 @@ def send_user_activation_email(email: str) -> None:
     activation_key: uuid.UUID = create_activation_key(email)
     activation_link = create_activation_link(activation_key)
 
-    send_activation_email.delay(recipient=email, activation_link=activation_link) # noqa
+    send_activation_email.delay(
+        recipient=email, activation_link=activation_link
+    )  # noqa
