@@ -6,9 +6,11 @@ from rest_framework import generics, permissions, serializers, status
 from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.permissions import BasePermission
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
+from . import services
 from .enums import Role
-from .models import User
+from .models import ActivationKey, User
 
 # User = get_user_model() # other method for import User
 
@@ -44,6 +46,12 @@ class UserRegistrationPublickSerializer(serializers.ModelSerializer):
         fields = ["id", "email", "first_name", "last_name", "role"]
 
 
+class ActivationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["key"]
+
+
 class UserAPI(generics.ListCreateAPIView):
     http_method_names = ["get", "post"]
     serializer_class = UserSerializer
@@ -52,10 +60,12 @@ class UserAPI(generics.ListCreateAPIView):
     def get_queryset(self):
         return User.objects.all()
 
-    def post(self, requst):
-        serializer = self.get_serializer(data=requst.data)
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
+
+        services.send_user_activation_email(email=serializer.data["email"])
 
         return Response(
             UserRegistrationPublickSerializer(serializer.data).data,
@@ -95,6 +105,26 @@ class UserRetrieveAPI(generics.RetrieveUpdateDestroyAPIView):
             raise PermissionDenied("Only admin users can perform this action.")
 
         return super().delete(request, *args, **kwargs)
+
+
+class UserActivationAPI(APIView):
+    serializer_class = ActivationSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        key = request.data.get("key")
+        try:
+            activation_key = ActivationKey.objects.get(key=key)
+        except ActivationKey.DoesNotExist:
+            return Response({"Invalid activation key"})
+
+        user = activation_key.user
+        user.is_active = True
+        user.save()
+
+        activation_key.delete()
+
+        return Response({"Your email is successfully activated"})
 
     # def delete(self, request):
     #     # if request.user.role == Role.JUNIOR or Role.SENIOR:

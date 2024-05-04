@@ -7,7 +7,7 @@ from issues.api import IssuesRetrieveAPI  # noqa
 from issues.api import issues_close  # noqa
 from issues.api import issues_take  # noqa
 from issues.api import messages_api_dispatcher  # noqa; noqa
-from users.api import UserAPI, UserRetrieveAPI  # noqa
+from users.api import UserActivationAPI, UserAPI, UserRetrieveAPI  # noqa
 
 # from rest_framework_simplejwt.views import TokenObtainPairView  # noqa
 # dfsdfsd
@@ -17,6 +17,7 @@ urlpatterns = [
     # users
     path("users/", UserAPI.as_view()),
     path("users/<int:id>", UserRetrieveAPI.as_view()),
+    path("users/activate/", UserActivationAPI.as_view()),
     # issues
     path("issues/", IssueAPI.as_view()),
     path("issues/<int:id>", IssuesRetrieveAPI.as_view()),

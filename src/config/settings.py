@@ -156,3 +156,13 @@ SIMPLE_JWT = {
 }
 
 APPEND_SLASH = False
+
+CELERY_BROKER_URL = os.getenv("REDIS_URL", default="redis://broker:6379/0")
+# CELERY_TASK_SERIALIZER ="pickle"
+
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = os.getenv("MAILHOG_HOST")
+EMAIL_PORT = os.getenv("MAILHOG_PORT")
+EMAIL_HOST_USER = os.getenv("MAILHOG_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("MAILHOG_HOST_PASSWORD")
