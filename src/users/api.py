@@ -8,9 +8,12 @@ from rest_framework.permissions import BasePermission
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from . import services
+from shared.cache import CacheService
+
+# from . import services
 from .enums import Role
-from .models import ActivationKey, User
+from .models import User
+from .services import Activator
 
 # User = get_user_model() # other method for import User
 
@@ -46,10 +49,8 @@ class UserRegistrationPublickSerializer(serializers.ModelSerializer):
         fields = ["id", "email", "first_name", "last_name", "role"]
 
 
-class ActivationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ["key"]
+class ActivationSerializer(serializers.Serializer):
+    key = serializers.UUIDField()
 
 
 class UserAPI(generics.ListCreateAPIView):
@@ -65,7 +66,15 @@ class UserAPI(generics.ListCreateAPIView):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
 
-        services.send_user_activation_email(email=serializer.data["email"])
+        # activation_key: uuid.UUID = services. create_activation_key(email=serializer.data["email"]) # noqa
+        # services.send_user_activation_email(email=serializer.data["email"], activation_key=activation_key) # noqa
+        activator_service = Activator(email=serializer.data["email"])
+        activation_key = activator_service.create_activation_key()
+        activator_service.send_user_activation_email(activation_key=activation_key)
+        activator_service.save_activation_information(
+            internal_user_id=serializer.instance.id,
+            activation_key=activation_key,
+        )
 
         return Response(
             UserRegistrationPublickSerializer(serializer.data).data,
@@ -112,25 +121,31 @@ class UserActivationAPI(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
-        key = request.data.get("key")
-        try:
-            activation_key = ActivationKey.objects.get(key=key)
-        except ActivationKey.DoesNotExist:
-            return Response({"Invalid activation key"})
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
-        user = activation_key.user
+        key = serializer.validated_data.get("key")
+        cache = CacheService()
+        activation_info = cache.get(namespace="activation", key=key)
+        user_id = activation_info.get("user_id")
+        user = User.objects.get(id=user_id)
         user.is_active = True
         user.save()
+        return Response(
+            {"Your email is successfully activated"}, status=status.HTTP_200_OK  # noqa
+        )
+        # else:
+        #     return Response({"Invalid activation key"}, status=status.HTTP_400_BAD_REQUEST) # noqa
 
-        activation_key.delete()
 
-        return Response({"Your email is successfully activated"})
+#         return Response({"Your email is successfully activated"})
 
-    # def delete(self, request):
-    #     # if request.user.role == Role.JUNIOR or Role.SENIOR:
-    #     #     raise Exception("Only Admin can delete")
 
-    #     return super().delete(request)
+# def delete(self, request):
+#     # if request.user.role == Role.JUNIOR or Role.SENIOR:
+#     #     raise Exception("Only Admin can delete")
+
+#     return super().delete(request)
 
 
 # def create_user(request: HttpRequest) -> JsonResponse:

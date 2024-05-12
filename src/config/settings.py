@@ -34,6 +34,7 @@ DJANGO_APPS = [
 LOCAL_APPS = [
     "users",
     "issues",
+    "shared",
 ]
 
 THIRD_PARTY_APPS = ["rest_framework", "rest_framework_simplejwt"]
@@ -156,8 +157,8 @@ SIMPLE_JWT = {
 }
 
 APPEND_SLASH = False
-
-CELERY_BROKER_URL = os.getenv("REDIS_URL", default="redis://broker:6379/0")
+CACHE_URL = os.getenv("CACHE_URL", default="redis://cache:6380/0")
+CELERY_BROKER_URL = os.getenv("BROKER_URL", default="redis://broker:6379/0")
 # CELERY_TASK_SERIALIZER ="pickle"
 
 

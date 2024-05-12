@@ -23,6 +23,10 @@ broker:
 mailing:
 	docker compose up -d mailing
 
+.PHONY: cache
+cache:
+	docker compose up -d cache
+
 .PHONY: down
 down:
 	docker compose down

@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models import Q
 
+from shared.django import TimestampMixin
 from users.models import User
 
 ISSUE_STATUS_CHOICES = (
@@ -15,7 +16,7 @@ class IssueManagers(models.Manager):
         return self.model.filter(Q(junior=user) | Q(senior=user))
 
 
-class Issue(models.Model):
+class Issue(TimestampMixin):
     title = models.CharField(max_length=100)
     body = models.TextField(null=True)
     status = models.PositiveSmallIntegerField(choices=ISSUE_STATUS_CHOICES)
