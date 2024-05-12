@@ -70,7 +70,7 @@ class UserAPI(generics.ListCreateAPIView):
         # services.send_user_activation_email(email=serializer.data["email"], activation_key=activation_key) # noqa
         activator_service = Activator(email=serializer.data["email"])
         activation_key = activator_service.create_activation_key()
-        activator_service.send_user_activation_email(activation_key=activation_key)
+        activator_service.send_user_activation_email(activation_key=activation_key) # noqa
         activator_service.save_activation_information(
             internal_user_id=serializer.instance.id,
             activation_key=activation_key,
